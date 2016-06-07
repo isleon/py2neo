@@ -1,0 +1,86 @@
+@startuml
+
+'skinparam monochrome true
+'skinparam classBackgroundColor White
+skinparam classArrowColor Black
+skinparam classBorderColor Black
+skinparam stereotypeCBackgroundColor Gray
+'hide members
+hide circle
+
+class DataSource {
+    +keys()
+    +stats()
+    +fetch()
+}
+
+class HTTPDataSource {
+    +__init__(graph, transaction, data=None)
+    +keys()
+    +stats()
+    +fetch()
+    +load(data)
+}
+
+class BoltDataSource {
+    +__init__(connection, entities, graph_uri)
+    +keys()
+    +stats()
+    +fetch()
+    +load(data)
+    +on_header(metadata)
+    +on_record(values)
+    +on_footer(metadata)
+    +on_failure(metadata)
+    +rehydrate(obj, inst=None)
+}
+
+DataSource <|-- HTTPDataSource
+DataSource <|-- BoltDataSource
+TransactionFinished --|> GraphError
+
+class Transaction {
+    +__init__(graph, autocommit=False)
+    +__enter__()
+    +__exit__()
+    +finished() : bool
+    +{abstract}run(statement, parameters=None, **kwparameters)
+    +process()
+    +finish()
+    +commit()
+    +rollback()
+    +evaluate(statement, parameters=None, **kwparameters)
+    +create(subgraph)
+    +degree(subgraph)
+    +delete(subgraph)
+    +exists(subgraph)
+    +merge(subgraph, primary_label=None, primary_key=None)
+    +separate(subgraph)
+}
+
+class HTTPTransaction {
+    
+}
+
+RemoteEntity --|> Resource
+Transaction <|-- HTTPTransaction
+Transaction <|-- BoltTransaction
+
+class Cursor {
+    
+}
+
+class Record {
+    +__new__(cls, keys, values)
+    +__init__(keys, values)
+    +keys()
+    +values()
+    -__repr__()
+    -__getitem__(item)
+    -__getslice__(i, j)
+}
+
+Record -u-|> tuple
+Record -u-|> Subgraph
+
+@enduml

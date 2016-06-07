@@ -1,0 +1,195 @@
+@startuml
+
+'skinparam monochrome true
+skinparam classBackgroundColor White
+skinparam classArrowColor Black
+skinparam classBorderColor Black
+skinparam stereotypeCBackgroundColor Gray
+'hide members
+hide circle
+
+class Graph {
+    +dbms
+    +node_labels
+    +relationship_types
+    +schema
+    +__new__(cls, *uris, **settings)
+    +begin(autocommit=False)
+    +create(subgraph)
+    +degree(subgraph)
+    +delete(subgraph)
+    +delete_all()
+    +evaluate(statement, parameters=None, **kwparameters)
+    +exists(subgraph)
+    +find(label, property_key=None,
+        \t property_value=None, limit=None)
+    +find_one(label, property_key=None,
+        \t property_value=None)
+    +match(start_node=None, rel_type=None, end_node=None,
+        \t bidirectional=False, limit=None)
+    +match_one(start_node=None, rel_type=None, end_node=None,
+        \t bidirectional=False)
+    +merge(subgraph, label=None, *property_keys)
+    +node(id_)
+    +relationship(id_)
+    +open_browser()
+    +pull(subgraph)
+    +push(subgraph)
+    +run(statement, parameters=None, **kwparameters)
+    +separate(subgraph)
+    --
+    -__repr__()
+    -__hash__()
+    -__order__()
+    -__size__()
+    -__len__()
+    -__bool__()
+    -__nonzero__()
+    -__contains__(entity)
+    -_hydrate(data, inst=None)
+}
+
+class Subgraph {
+    +__init__(nodes=None, relationships=None)
+    --
+    +nodes()
+    +relationships()
+    +labels()
+    +types()
+    +keys()
+    --
+    -__repr__()
+    -__eq__(other)
+    -__ne__(other)
+    -__hash__()
+    -__order__()
+    -__size__()
+    -__len__()
+    -__iter__()
+    -__bool__()
+    -__nonzero__()
+    ..
+    -__or__()
+    -__and__()
+    -__sub__()
+    -__xor__()
+    ..
+    -__db_create__()
+    -__db_degree__()
+    -__db_delete__()
+    -__db_exists__()
+    -__db_merge__()
+    -__db_pull__()
+    -__db_push__()
+    -__db_separate__()
+}
+
+class Entity {
+    -itemMouseOver : attributeHandlerFactory
+    -itemMouseOut : attributeHandlerFactory
+    -onCanvasClicked : attributeHandlerFactory
+    -selectItem : attributeHandlerFactory
+    --
+    +render(initialGraph)
+    +initGraphView(graph)
+    +getGraphView()
+    +measureSize()
+    +toggleSelection(d)
+    +checkLimitsReached(result)
+    +checkMaxNodesReached(graph)
+    --
+    -attributeHandlerFactory()
+}
+
+class Walkable {
+    +__init__(iterable)
+    +start_node()
+    +end_node()
+    +nodes()
+    +relationships()
+    --
+    -__repr__()
+    -__eq__(other)
+    -__ne__(other)
+    -__hash__()
+    -__len__()
+    -__getitem__(index)
+    -__iter__()
+    -__add__(other)
+    -__walk__()
+}
+
+class Node <Relatable> {
+    +__init__(*labels, **properties)
+    --
+    +labels()
+    +has_label(label)
+    +add_label(label)
+    +clear_labels()
+    +update_labels(labels)
+    +{static} hydrate(data, inst=None)
+    --
+    -__repr__()
+    -__eq__(other)
+    -__ne__(other)
+    -__hash__()
+    -__getitem__(item)
+    -__ensure_labels()
+}
+
+class Relationship {
+    +__init__(*nodes, **properties)
+    --
+    +type()
+    +{static} default_type()
+    +{static} hydrate(data, inst=None)
+    --
+    -__repr__()
+    -__eq__(other)
+    -__ne__(other)
+    -__hash__()
+}
+
+class PropertyDict <dict>#LightGray {
+    +__init__(iterable=None, **kwargs)
+    --
+    +setdefault(key, default=None)
+    +update(iterable=None, **kwargs)
+    --
+    -__eq__(other)
+    -__ne__(other)
+    -__getitem__(key)
+    -__setitem__(key, value)
+}
+
+Walkable -l-|> Subgraph
+Walkable <|-r- Path
+'PropertyDict --|> dict
+Entity -l-|> PropertyDict
+Entity --u|> Walkable
+Entity <|-d- Node
+Entity <|-d- Relationship
+'Relatable <|-- Node
+
+'class Relatable  #LightGray
+
+class Path {
+    +{static} hydrate(data)
+    +__init__(*entities)
+}
+
+class Schema #LightCyan {
+    +__init__(uri)
+    --
+    +create_index(label, property_key)
+    +create_uniqueness_constraint(label, property_key)
+    +drop_index(label, property_key)
+    +drop_uniqueness_constraint(label, property_key)
+    +get_indexes(label)
+    +get_uniqueness_constraints(label)
+}
+
+Graph -d-> Schema
+Graph -r-> Subgraph
+
+@enduml
